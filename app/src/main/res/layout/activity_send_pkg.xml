@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".BlueToothSender">
+
+    <Switch
+        android:id="@+id/InitPN"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="扫描方向(正向请打开)" />
+
+    <TextView
+        android:id="@+id/textView12"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="控制流" />
+    <Spinner
+        android:id="@+id/CMD"
+        android:ems="10"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="InitE(起始电压 )" />
+    <EditText
+        android:id="@+id/InitE"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="-12.7~12.7,步长0.1"
+        android:inputType="number|numberDecimal|numberSigned" />
+
+    <TextView
+        android:id="@+id/text3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="FinalE(截止电压)"
+        />
+    <EditText
+        android:id="@+id/FinalE"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="-12.7~12.7,步长0.1"
+        android:inputType="number|numberDecimal|numberSigned"
+        />
+
+
+
+    <TextView
+        android:id="@+id/text4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Scan_R(V/S)"
+        />
+    <EditText
+        android:id="@+id/Scan_R"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="0~655.36,步长0.01"
+        android:inputType="number|numberDecimal"
+    ></EditText>
+
+    <TextView
+        android:id="@+id/text5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sweep_s"
+        />
+    <EditText
+        android:id="@+id/Sweep_s"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="0~255,步长1"
+        android:inputType="number"
+        ></EditText>
+
+
+    <TextView
+        android:id="@+id/text6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="sampling_I"
+        />
+    <EditText
+        android:id="@+id/sampling_I"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="0~255,步长1"
+        android:inputType="number"
+        ></EditText>
+
+
+    <TextView
+        android:id="@+id/text7"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Increse_E"
+        />
+    <EditText
+        android:id="@+id/Increse_E"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="0~255,步长1"
+        android:inputType="number"
+        ></EditText>
+
+    <TextView
+        android:id="@+id/textView8"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Amplitude (振幅)"
+        />
+
+    <EditText
+        android:id="@+id/Amplitude"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="-32767~32767, 1mv"
+        android:inputType="number|numberSigned" />
+
+    <TextView
+        android:id="@+id/textView9"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Pulse_P ( 脉冲周期)"
+        />
+    <EditText
+        android:id="@+id/Pulse_P"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="0~655350,步长10ms"
+        android:inputType="number"
+        />
+    <TextView
+        android:id="@+id/textView10"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sampling (采样宽度)"
+        />
+
+    <EditText
+        android:id="@+id/Sampling"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="0~6553.6,步长0.1ms"
+        android:ems="10"
+        android:inputType="number|numberDecimal"
+        />
+
+    <TextView
+        android:id="@+id/textView11"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ebrich_T (富集时间) " />
+
+    <EditText
+        android:id="@+id/Ebrich_T"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="0~255,步长1"
+        android:ems="10"
+        android:inputType="number" />
+    <TextView
+        android:id="@+id/text10"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="HighE" />
+
+    <EditText
+        android:id="@+id/HighE"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="-12.7~12.7,步长0.1"
+        android:ems="10"
+        android:inputType="number|numberDecimal|numberSigned"
+        />
+
+    <TextView
+        android:id="@+id/text11"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="LowE" />
+
+    <EditText
+        android:id="@+id/LowE"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="-12.7~12.7,步长0.1"
+        android:ems="10"
+        android:inputType="number|numberDecimal|numberSigned"
+        />
+    <TextView
+        android:id="@+id/text12"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Pulse_W" />
+
+    <EditText
+        android:id="@+id/Pulse_W"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="0~65535,步长1"
+        android:ems="10"
+        android:inputType="number" />
+
+    <Button
+        android:id="@+id/button2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="发送数据" />
+    </LinearLayout>
+</ScrollView>
