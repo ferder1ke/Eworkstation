@@ -5,11 +5,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -45,8 +41,7 @@ public class MainActivity extends AppCompatActivity {
     private  LineChart lineChart;
     private static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"); // Standard SerialPortService ID
 
-    private Handler handler = new Handler(Looper.getMainLooper());
-
+    private Thread thread;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,7 +51,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Button connectButton = findViewById(R.id.connectButton);
         dataDisplay = findViewById(R.id.dataDisplay);
-        Log.d("MyApp", "onCreate executed");
 
         lineChart = findViewById(R.id.lineChart);
 
@@ -125,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "蓝牙链接成功", Toast.LENGTH_SHORT).show();
             InputStream mmInputStream = socket.getInputStream();
             BufferedReader mmBufferedReader = new BufferedReader(new InputStreamReader(mmInputStream));
-            Thread listenThread = new Thread(new Runnable() {
+            thread = new Thread(new Runnable() {
                 @Override
                 public void run() {
                     try {
@@ -146,7 +140,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
             });
-            listenThread.start();
+            thread.start();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -178,6 +172,19 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
         return true;
+    }
+    @Override
+    @SuppressLint("MissingPermission")
+    protected void onResume() {
+        super.onResume();
+        try {
+            if(mmSocket != null){
+                startListening(mmSocket);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
     private void showToast(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
