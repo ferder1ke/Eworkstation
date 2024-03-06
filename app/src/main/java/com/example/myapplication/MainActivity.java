@@ -7,6 +7,8 @@ import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -33,6 +35,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+// Fix Flashback when it receive Pkg
 public class MainActivity extends AppCompatActivity {
 
     public  BluetoothSocket mmSocket;
@@ -42,6 +45,8 @@ public class MainActivity extends AppCompatActivity {
 
     private  LineChart lineChart;
     private static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"); // Standard SerialPortService ID
+
+    private Handler handler = new Handler(Looper.getMainLooper());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,8 +60,13 @@ public class MainActivity extends AppCompatActivity {
         Log.d("MyApp", "onCreate executed");
 
         lineChart = findViewById(R.id.lineChart);
+<<<<<<< HEAD
         setData();
         TextView textView = findViewById(R.id.textView5);
+=======
+
+        dataDisplay.append("Hello World!" + "\n");
+>>>>>>> main
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (bluetoothAdapter == null) {
             Toast.makeText(this, "设备不支持蓝牙", Toast.LENGTH_SHORT).show();
@@ -89,6 +99,7 @@ public class MainActivity extends AppCompatActivity {
         //LineData才是正真给LineChart的数据
         LineData lineData = new LineData(lineDataSet);
         lineChart.setData(lineData);
+        lineChart.invalidate(); // 刷新图表
     }
 
 
@@ -114,6 +125,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+
     private void startListening(BluetoothSocket socket) {
         try {
             Toast.makeText(this, "蓝牙链接成功", Toast.LENGTH_SHORT).show();
@@ -122,30 +134,14 @@ public class MainActivity extends AppCompatActivity {
             Thread listenThread = new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    byte[] buffer = new byte[1024];
-                    int bytes;
-                    InputStream is = null;
                     try {
-                        is = socket.getInputStream();
                         while (!Thread.currentThread().isInterrupted()) {
-                            while((bytes = is.read(buffer)) > 0){
-                                byte[] buf_data = new byte[bytes];
-                                for(int i = 0; i < bytes; i++){
-                                    buf_data[i] = buffer[i];
-                                }
-                                String tmp = "";
-                                for (int i = 0; i < buf_data.length; i++) {
-                                    int v = buf_data[i]& 0xFF;
-                                    String s = Integer.toHexString(v);
-                                    tmp += s;
-                                }
-                                dataDisplay.append(tmp + "\n");
-                            }
                             String receivedData = mmBufferedReader.readLine();
                             if (receivedData != null) {
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
+                                        setData();
                                         dataDisplay.append(receivedData + "\n");
                                     }
                                 });
