@@ -9,7 +9,6 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.os.Message;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -35,6 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+// Fix Flashback when it receive Pkg
 public class MainActivity extends AppCompatActivity {
 
     public  BluetoothSocket mmSocket;
@@ -93,6 +93,7 @@ public class MainActivity extends AppCompatActivity {
         //LineData才是正真给LineChart的数据
         LineData lineData = new LineData(lineDataSet);
         lineChart.setData(lineData);
+        lineChart.invalidate(); // 刷新图表
     }
 
 
@@ -134,19 +135,7 @@ public class MainActivity extends AppCompatActivity {
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        float datas[] = {14f,15f,16f,17f,16f,16f};
-                                        //在MPAndroidChart一般都是通过List<Entry>对象来装数据的
-                                        List<Entry> entries = new ArrayList<Entry>();
-                                        //循环取出数据
-                                        for(int i = 0; i < datas.length; i++){
-                                            entries.add(new Entry(i,datas[i]));
-                                        }
-                                        //一个LineDataSet对象就是一条曲线
-                                        LineDataSet lineDataSet = new LineDataSet(entries,"第一条数据");
-                                        //LineData才是正真给LineChart的数据
-                                        LineData lineData = new LineData(lineDataSet);
-                                        lineChart.setData(lineData);
-                                        lineChart.invalidate(); // 刷新图表
+                                        setData();
                                         dataDisplay.append(receivedData + "\n");
                                     }
                                 });
