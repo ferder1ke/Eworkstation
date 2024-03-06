@@ -7,6 +7,9 @@ import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -42,6 +45,8 @@ public class MainActivity extends AppCompatActivity {
     private  LineChart lineChart;
     private static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"); // Standard SerialPortService ID
 
+    private Handler handler = new Handler(Looper.getMainLooper());
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,7 +59,8 @@ public class MainActivity extends AppCompatActivity {
         Log.d("MyApp", "onCreate executed");
 
         lineChart = findViewById(R.id.lineChart);
-        setData();
+
+        dataDisplay.append("Hello World!" + "\n");
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (bluetoothAdapter == null) {
             Toast.makeText(this, "设备不支持蓝牙", Toast.LENGTH_SHORT).show();
@@ -112,6 +118,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+
     private void startListening(BluetoothSocket socket) {
         try {
             Toast.makeText(this, "蓝牙链接成功", Toast.LENGTH_SHORT).show();
@@ -120,30 +127,26 @@ public class MainActivity extends AppCompatActivity {
             Thread listenThread = new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    byte[] buffer = new byte[1024];
-                    int bytes;
-                    InputStream is = null;
                     try {
-                        is = socket.getInputStream();
                         while (!Thread.currentThread().isInterrupted()) {
-                            while((bytes = is.read(buffer)) > 0){
-                                byte[] buf_data = new byte[bytes];
-                                for(int i = 0; i < bytes; i++){
-                                    buf_data[i] = buffer[i];
-                                }
-                                String tmp = "";
-                                for (int i = 0; i < buf_data.length; i++) {
-                                    int v = buf_data[i]& 0xFF;
-                                    String s = Integer.toHexString(v);
-                                    tmp += s;
-                                }
-                                dataDisplay.append(tmp + "\n");
-                            }
                             String receivedData = mmBufferedReader.readLine();
                             if (receivedData != null) {
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
+                                        float datas[] = {14f,15f,16f,17f,16f,16f};
+                                        //在MPAndroidChart一般都是通过List<Entry>对象来装数据的
+                                        List<Entry> entries = new ArrayList<Entry>();
+                                        //循环取出数据
+                                        for(int i = 0; i < datas.length; i++){
+                                            entries.add(new Entry(i,datas[i]));
+                                        }
+                                        //一个LineDataSet对象就是一条曲线
+                                        LineDataSet lineDataSet = new LineDataSet(entries,"第一条数据");
+                                        //LineData才是正真给LineChart的数据
+                                        LineData lineData = new LineData(lineDataSet);
+                                        lineChart.setData(lineData);
+                                        lineChart.invalidate(); // 刷新图表
                                         dataDisplay.append(receivedData + "\n");
                                     }
                                 });
