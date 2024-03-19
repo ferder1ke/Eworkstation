@@ -93,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
         float ans = 0;
         for (int i = 0; i < voltage.length; i++) {
             float value = voltage[i] & 0xFF; // 将字节转换为无符号整数
-            ans += value * Math.pow(16, i); // 计算每个字节对应的十进制值，并累加到结果中
+            ans += value * Math.pow(16 * 16, i); // 计算每个字节对应的十进制值，并累加到结果中
         }
         if((Neg & 0x10) == 0x10)
             return -1 * ans;
@@ -104,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
         float ans = 0;
         for (int i = 0; i < current.length; i++) {
             float value = current[i] & 0xFF; // 将字节转换为无符号整数
-            ans += value * Math.pow(16, i); // 计算每个字节对应的十进制值，并累加到结果中
+            ans += value * Math.pow(16 * 16, i); // 计算每个字节对应的十进制值，并累加到结果中
         }
         if((Neg & 0x01) == 0x01)
             return -1 * ans;
