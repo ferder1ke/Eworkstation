@@ -95,12 +95,6 @@ public class MainActivity extends AppCompatActivity {
             float value = voltage[i] & 0xFF; // 将字节转换为无符号整数
             ans += value * Math.pow(16, i); // 计算每个字节对应的十进制值，并累加到结果中
         }
-        //for(int i = 0; i < 4; ++i) {
-            //for(int j = 0; i < 2; ++j) {
-
-          //  ans += (voltage[i]) * (16 * 16 * i);
-            //}
-        //}
         if((Neg & 0x10) == 0x10)
             return -1 * ans;
         return ans;
@@ -140,22 +134,7 @@ public class MainActivity extends AppCompatActivity {
         byte[] current = getSpecByteArray(8, 4, src);
         byte Neg = src[3];
         updateChart(getXVal(Neg, voltage), getYVal(Neg, current));
-//        float datas[] = {14f,15f,16f,17f,16f,16f};
-//        //在MPAndroidChart一般都是通过List<Entry>对象来装数据的
-//        List<Entry> entries = new ArrayList<Entry>();
-//
-//        //循环取出数据
-//        for(int i = 0; i < datas.length; i++){
-//            entries.add(new Entry(i,datas[i]));
-//        }
-//        //一个LineDataSet对象就是一条曲线
-//        LineDataSet lineDataSet = new LineDataSet(entries,"第一条数据");
-//        //LineData才是正真给LineChart的数据
-//        LineData lineData = new LineData(lineDataSet);
-//        lineChart.setData(lineData);
-//        lineChart.invalidate(); // 刷新图表
     }
-
 
     @Override
     @SuppressLint("MissingPermission")
