@@ -49,10 +49,14 @@ public class MainActivity extends AppCompatActivity {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         setContentView(R.layout.activity_main);
-        Button connectButton = findViewById(R.id.connectButton);
+        Button pictureReset = findViewById(R.id.picture_reset);
         dataDisplay = findViewById(R.id.dataDisplay);
 
         lineChart = findViewById(R.id.lineChart);
+        List<Entry> entries = new ArrayList<>();
+        LineDataSet dataSet = new LineDataSet(entries, "Real-time Data");
+        LineData lineData = new LineData(dataSet);
+        lineChart.setData(lineData);
 
         dataDisplay.append("Hello World!" + "\n");
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -60,34 +64,96 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "设备不支持蓝牙", Toast.LENGTH_SHORT).show();
             finish();
         }
-        connectButton.setOnClickListener(new View.OnClickListener() {
+        pictureReset.setOnClickListener(new View.OnClickListener() {
             @Override
             @SuppressLint("MissingPermission")
             public void onClick(View v) {
-                if (!bluetoothAdapter.isEnabled()) {
-                    Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-                    startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
-                } else {
-                    selectBluetoothDevice();
-                }
+                lineChart.clear();
+                List<Entry> entries = new ArrayList<>();
+                LineDataSet dataSet = new LineDataSet(entries, "Real-time Data");
+                LineData lineData = new LineData(dataSet);
+                lineChart.setData(lineData);
+                lineChart.invalidate();
             }
         });
     }
 
-    public void setData(){
-        float datas[] = {14f,15f,16f,17f,16f,16f};
-        //在MPAndroidChart一般都是通过List<Entry>对象来装数据的
-        List<Entry> entries = new ArrayList<Entry>();
-        //循环取出数据
-        for(int i = 0; i < datas.length; i++){
-            entries.add(new Entry(i,datas[i]));
+    public void updateChart(float x, float y) {
+        LineData lineData = lineChart.getLineData();
+        LineDataSet dataSet = (LineDataSet) lineData.getDataSetByIndex(0);
+
+        Entry newEntry = new Entry(x, y);
+        dataSet.addEntry(newEntry);
+        lineData.notifyDataChanged();
+        lineChart.notifyDataSetChanged();
+        lineChart.invalidate();
+    }
+
+    public float getXVal(byte Neg, byte[] voltage) {
+        float ans = 0;
+        for (int i = 0; i < voltage.length; i++) {
+            float value = voltage[i] & 0xFF; // 将字节转换为无符号整数
+            ans += value * Math.pow(16, i); // 计算每个字节对应的十进制值，并累加到结果中
         }
-        //一个LineDataSet对象就是一条曲线
-        LineDataSet lineDataSet = new LineDataSet(entries,"第一条数据");
-        //LineData才是正真给LineChart的数据
-        LineData lineData = new LineData(lineDataSet);
-        lineChart.setData(lineData);
-        lineChart.invalidate(); // 刷新图表
+        //for(int i = 0; i < 4; ++i) {
+            //for(int j = 0; i < 2; ++j) {
+
+          //  ans += (voltage[i]) * (16 * 16 * i);
+            //}
+        //}
+        if((Neg & 0x10) == 0x10)
+            return -1 * ans;
+        return ans;
+    }
+
+    public float getYVal(byte Neg, byte[] current) {
+        float ans = 0;
+        for (int i = 0; i < current.length; i++) {
+            float value = current[i] & 0xFF; // 将字节转换为无符号整数
+            ans += value * Math.pow(16, i); // 计算每个字节对应的十进制值，并累加到结果中
+        }
+        if((Neg & 0x01) == 0x01)
+            return -1 * ans;
+        return ans;
+    }
+
+    byte[] string2ByteArray(String str) {
+        byte[] temp = new byte[str.length() / 2];
+
+        for (int i = 0; i < str.length(); i += 2) {
+            String hex = str.substring(i, i + 2);
+            temp[i / 2] = (byte) Integer.parseInt(hex, 16);
+        }
+        return  temp;
+    }
+
+    byte[] getSpecByteArray(int index, int len, byte[] src) {
+        byte[] byteArray = new byte[len];
+        for(int i = index; i < index + len; ++i) {
+            byteArray[i - index] = src[i];
+        }
+        return byteArray;
+    }
+    public void setData(String bufferLine){
+        byte[] src = string2ByteArray(bufferLine);
+        byte[] voltage = getSpecByteArray(4, 4, src);
+        byte[] current = getSpecByteArray(8, 4, src);
+        byte Neg = src[3];
+        updateChart(getXVal(Neg, voltage), getYVal(Neg, current));
+//        float datas[] = {14f,15f,16f,17f,16f,16f};
+//        //在MPAndroidChart一般都是通过List<Entry>对象来装数据的
+//        List<Entry> entries = new ArrayList<Entry>();
+//
+//        //循环取出数据
+//        for(int i = 0; i < datas.length; i++){
+//            entries.add(new Entry(i,datas[i]));
+//        }
+//        //一个LineDataSet对象就是一条曲线
+//        LineDataSet lineDataSet = new LineDataSet(entries,"第一条数据");
+//        //LineData才是正真给LineChart的数据
+//        LineData lineData = new LineData(lineDataSet);
+//        lineChart.setData(lineData);
+//        lineChart.invalidate(); // 刷新图表
     }
 
 
@@ -129,8 +195,12 @@ public class MainActivity extends AppCompatActivity {
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        setData();
-                                        dataDisplay.append(receivedData + "\n");
+
+                                        String tmp = receivedData.replaceAll("\\s", "");
+                                        if(tmp.length() != 26)
+                                            return;
+                                        setData(tmp);
+                                        dataDisplay.append(tmp + "\n");
                                     }
                                 });
                             }
