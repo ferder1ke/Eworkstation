@@ -308,6 +308,20 @@ BlueToothSender extends AppCompatActivity {
         }catch (Exception e){
             e.printStackTrace();
         }
+        try {
+            if (mmSocket != null){
+                if(!mmSocket.isConnected()){
+                    mmSocket.connect();
+                }
+                OutputStream outputStream = mmSocket.getOutputStream();
+                if(outputStream != null){
+                    outputStream.write(0);
+                    outputStream.flush();
+                }
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
          mButton.setOnClickListener(new View.OnClickListener() {
              @Override
              public void onClick(View view) {
