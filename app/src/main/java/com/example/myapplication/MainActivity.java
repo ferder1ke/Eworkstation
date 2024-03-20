@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -47,10 +48,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
         setContentView(R.layout.activity_main);
         Button pictureReset = findViewById(R.id.picture_reset);
         dataDisplay = findViewById(R.id.dataDisplay);
+
 
         lineChart = findViewById(R.id.lineChart);
         List<Entry> entries = new ArrayList<>();
@@ -59,6 +60,8 @@ public class MainActivity extends AppCompatActivity {
         lineChart.setData(lineData);
 
         dataDisplay.append("Hello World!" + "\n");
+
+
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (bluetoothAdapter == null) {
             Toast.makeText(this, "设备不支持蓝牙", Toast.LENGTH_SHORT).show();
