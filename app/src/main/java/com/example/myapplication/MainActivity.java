@@ -60,13 +60,7 @@ public class MainActivity extends AppCompatActivity {
         Log.d("MyApp", "onCreate executed");
 
         lineChart = findViewById(R.id.lineChart);
-<<<<<<< HEAD
-        setData();
-        TextView textView = findViewById(R.id.textView5);
-=======
 
-        dataDisplay.append("Hello World!" + "\n");
->>>>>>> main
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (bluetoothAdapter == null) {
             Toast.makeText(this, "设备不支持蓝牙", Toast.LENGTH_SHORT).show();
