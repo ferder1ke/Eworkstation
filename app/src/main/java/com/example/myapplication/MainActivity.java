@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
 
         lineChart = findViewById(R.id.lineChart);
         List<Entry> entries = new ArrayList<>();
-        LineDataSet dataSet = new LineDataSet(entries, "Real-time Data V/uA");
+        LineDataSet dataSet = new LineDataSet(entries, "Real-time Data V/A");
         LineData lineData = new LineData(dataSet);
         lineChart.setData(lineData);
 
