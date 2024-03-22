@@ -17,11 +17,17 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.motion.utils.ViewSpline;
 
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.MarkerView;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.formatter.ValueFormatter;
+import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -55,9 +61,37 @@ public class MainActivity extends AppCompatActivity {
 
         lineChart = findViewById(R.id.lineChart);
         List<Entry> entries = new ArrayList<>();
-        LineDataSet dataSet = new LineDataSet(entries, "Real-time Data");
+        LineDataSet dataSet = new LineDataSet(entries, "Real-time Data V/uA");
         LineData lineData = new LineData(dataSet);
         lineChart.setData(lineData);
+
+        XAxis xAxis = lineChart.getXAxis();
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setDrawGridLines(false);
+        //xAxis.setGranularity(1f);
+        xAxis.setValueFormatter(new ValueFormatter() {
+            @Override
+            public String getFormattedValue(float value) {
+                // 自定义横坐标标签格式
+                return value + "V";
+            }
+        });
+
+        YAxis leftYAxis = lineChart.getAxisLeft();
+        leftYAxis.setDrawGridLines(true);
+
+        leftYAxis.setValueFormatter(new ValueFormatter() {
+            @Override
+            public String getFormattedValue(float value) {
+                // 自定义纵坐标标签格式
+                return value + "A";
+            }
+        });
+
+
+        YAxis rightYAxis = lineChart.getAxisRight();
+        rightYAxis.setEnabled(false);
+
 
         dataDisplay.append("Hello World!" + "\n");
 
@@ -73,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 lineChart.clear();
                 List<Entry> entries = new ArrayList<>();
-                LineDataSet dataSet = new LineDataSet(entries, "Real-time Data");
+                LineDataSet dataSet = new LineDataSet(entries, "Real-time Data V/A");
                 LineData lineData = new LineData(dataSet);
                 lineChart.setData(lineData);
                 lineChart.invalidate();
@@ -100,6 +134,9 @@ public class MainActivity extends AppCompatActivity {
         }
         if((Neg & 0x10) == 0x10)
             return -1 * ans;
+
+        ans = ans/1000;//把横轴数据缩小1000倍
+
         return ans;
     }
 
@@ -111,6 +148,9 @@ public class MainActivity extends AppCompatActivity {
         }
         if((Neg & 0x01) == 0x01)
             return -1 * ans;
+
+        ans = ans/1000000;//把uA换成A
+
         return ans;
     }
 
@@ -147,7 +187,7 @@ public class MainActivity extends AppCompatActivity {
             if (resultCode == RESULT_OK) {
                 selectBluetoothDevice();
             } else {
-                Toast.makeText(this, "为启动蓝牙", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "未启动蓝牙", Toast.LENGTH_SHORT).show();
             }
         } else if (requestCode == 2 && resultCode == RESULT_OK) {
             String address = data.getStringExtra("address");
