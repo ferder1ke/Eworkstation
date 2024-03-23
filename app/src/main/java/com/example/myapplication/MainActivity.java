@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -65,6 +66,8 @@ public class MainActivity extends AppCompatActivity {
 
         XAxis xAxis = lineChart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setTextColor(Color.WHITE); // 设置横坐标轴标签颜色为白色
+
         xAxis.setDrawGridLines(false);
         //xAxis.setGranularity(1f);
         xAxis.setValueFormatter(new ValueFormatter() {
@@ -81,6 +84,7 @@ public class MainActivity extends AppCompatActivity {
 
         YAxis leftYAxis = lineChart.getAxisLeft();
         leftYAxis.setDrawGridLines(true);
+        leftYAxis.setTextColor(Color.WHITE);// 设置纵坐标轴标签颜色为白色
 
         leftYAxis.setValueFormatter(new ValueFormatter() {
             @Override
@@ -97,9 +101,10 @@ public class MainActivity extends AppCompatActivity {
         lineChart.setDragEnabled(true); // 允许拖动
         lineChart.setScaleEnabled(true); // 允许缩放
 
-        Description description = new Description();//这五行代码用来调试显示文本
+        Description description = new Description();//这六行代码用来调试显示文本
         description.setText("电压/电流");
         description.setEnabled(true);
+        description.setTextColor(Color.WHITE);//颜色的代码
         description.setPosition(500f, 20f); // 设置描述文本的位置坐标
         lineChart.setDescription(description);
 
