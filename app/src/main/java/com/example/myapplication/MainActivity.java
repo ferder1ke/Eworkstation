@@ -12,27 +12,25 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.motion.utils.ViewSpline;
 
 import com.github.mikephil.charting.charts.LineChart;
-import com.github.mikephil.charting.components.MarkerView;
+import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.ValueFormatter;
-import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -58,12 +56,12 @@ public class MainActivity extends AppCompatActivity {
         Button pictureReset = findViewById(R.id.picture_reset);
         dataDisplay = findViewById(R.id.dataDisplay);
 
-
         lineChart = findViewById(R.id.lineChart);
         List<Entry> entries = new ArrayList<>();
-        LineDataSet dataSet = new LineDataSet(entries, "Real-time Data V/A");
+        LineDataSet dataSet = new LineDataSet(entries, "Real-time Data");
         LineData lineData = new LineData(dataSet);
         lineChart.setData(lineData);
+
 
         XAxis xAxis = lineChart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
@@ -73,7 +71,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public String getFormattedValue(float value) {
                 // 自定义横坐标标签格式
-                return value + "V";
+
+                DecimalFormat decimalFormat = new DecimalFormat("#.##"); // 创建小数点后两位的格式化器
+                String valuenew = decimalFormat.format(value); // 将 float 数格式化为字符串
+
+                return valuenew + "V";
             }
         });
 
@@ -84,14 +86,24 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public String getFormattedValue(float value) {
                 // 自定义纵坐标标签格式
-                return value + "A";
+                DecimalFormat decimalFormat = new DecimalFormat("#.##"); // 创建小数点后两位的格式化器
+                String valuenew = decimalFormat.format(value); // 将 float 数格式化为字符串
+                return valuenew + "A";
             }
         });
-
-
         YAxis rightYAxis = lineChart.getAxisRight();
         rightYAxis.setEnabled(false);
 
+        lineChart.setDragEnabled(true); // 允许拖动
+        lineChart.setScaleEnabled(true); // 允许缩放
+
+        Description description = new Description();//这五行代码用来调试显示文本
+        description.setText("电压/电流");
+        description.setEnabled(true);
+        description.setPosition(500f, 20f); // 设置描述文本的位置坐标
+        lineChart.setDescription(description);
+
+        dataSet.setDrawValues(false);// 禁止数据点的数值显示
 
         dataDisplay.append("Hello World!" + "\n");
 
@@ -107,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 lineChart.clear();
                 List<Entry> entries = new ArrayList<>();
-                LineDataSet dataSet = new LineDataSet(entries, "Real-time Data V/A");
+                LineDataSet dataSet = new LineDataSet(entries, "Real-time Data");
                 LineData lineData = new LineData(dataSet);
                 lineChart.setData(lineData);
                 lineChart.invalidate();
