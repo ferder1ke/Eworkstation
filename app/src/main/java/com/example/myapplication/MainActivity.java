@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -18,14 +19,19 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.Description;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.formatter.ValueFormatter;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -47,7 +53,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
         setContentView(R.layout.activity_main);
         Button pictureReset = findViewById(R.id.picture_reset);
         dataDisplay = findViewById(R.id.dataDisplay);
@@ -58,7 +63,56 @@ public class MainActivity extends AppCompatActivity {
         LineData lineData = new LineData(dataSet);
         lineChart.setData(lineData);
 
+
+        XAxis xAxis = lineChart.getXAxis();
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setTextColor(Color.WHITE); // 设置横坐标轴标签颜色为白色
+
+        xAxis.setDrawGridLines(false);
+        //xAxis.setGranularity(1f);
+        xAxis.setValueFormatter(new ValueFormatter() {
+            @Override
+            public String getFormattedValue(float value) {
+                // 自定义横坐标标签格式
+
+                DecimalFormat decimalFormat = new DecimalFormat("#.##"); // 创建小数点后两位的格式化器
+                String valuenew = decimalFormat.format(value); // 将 float 数格式化为字符串
+
+                return valuenew + "V";
+            }
+        });
+
+        YAxis leftYAxis = lineChart.getAxisLeft();
+        leftYAxis.setDrawGridLines(true);
+        leftYAxis.setTextColor(Color.WHITE);// 设置纵坐标轴标签颜色为白色
+
+        leftYAxis.setValueFormatter(new ValueFormatter() {
+            @Override
+            public String getFormattedValue(float value) {
+                // 自定义纵坐标标签格式
+                DecimalFormat decimalFormat = new DecimalFormat("#.##"); // 创建小数点后两位的格式化器
+                String valuenew = decimalFormat.format(value); // 将 float 数格式化为字符串
+                return valuenew + "A";
+            }
+        });
+        YAxis rightYAxis = lineChart.getAxisRight();
+        rightYAxis.setEnabled(false);
+
+        lineChart.setDragEnabled(true); // 允许拖动
+        lineChart.setScaleEnabled(true); // 允许缩放
+
+        Description description = new Description();//这六行代码用来调试显示文本
+        description.setText("电压/电流");
+        description.setEnabled(true);
+        description.setTextColor(Color.WHITE);//颜色的代码
+        description.setPosition(500f, 20f); // 设置描述文本的位置坐标
+        lineChart.setDescription(description);
+
+        dataSet.setDrawValues(false);// 禁止数据点的数值显示
+
         dataDisplay.append("Hello World!" + "\n");
+
+
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (bluetoothAdapter == null) {
             Toast.makeText(this, "设备不支持蓝牙", Toast.LENGTH_SHORT).show();
@@ -97,6 +151,9 @@ public class MainActivity extends AppCompatActivity {
         }
         if((Neg & 0x10) == 0x10)
             return -1 * ans;
+
+        ans = ans/1000;//把横轴数据缩小1000倍
+
         return ans;
     }
 
@@ -108,6 +165,9 @@ public class MainActivity extends AppCompatActivity {
         }
         if((Neg & 0x01) == 0x01)
             return -1 * ans;
+
+        ans = ans/1000000;//把uA换成A
+
         return ans;
     }
 
@@ -144,7 +204,7 @@ public class MainActivity extends AppCompatActivity {
             if (resultCode == RESULT_OK) {
                 selectBluetoothDevice();
             } else {
-                Toast.makeText(this, "为启动蓝牙", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "未启动蓝牙", Toast.LENGTH_SHORT).show();
             }
         } else if (requestCode == 2 && resultCode == RESULT_OK) {
             String address = data.getStringExtra("address");
