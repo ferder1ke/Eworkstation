@@ -27,34 +27,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-//scrcpy
 public class
 BlueToothSender extends AppCompatActivity {
     private EditText InitE, FinalE , Scan_R, Sweep_s, sampling_I, Increse_E;
     private Switch InitPN;
 
     private EditText Amplitude, Pulse_P, Sampling, Ebrich_T, HighE, LowE, Pulse_W;
-//    private EditText InitE = findViewById(R.id.InitE), FinalE = findViewById(R.id.FinalE),
-//            Scan_R = findViewById(R.id.Scan_R), Sweep_s = findViewById(R.id.Sweep_s),
-//            sampling_I = findViewById(R.id.sampling_I), Increse_E = findViewById(R.id.Increse_E),
-//            Enrich_E = findViewById(R.id.Enrich_E), Amplitude = findViewById(R.id.Amplitude),
-//            Pulse_P = findViewById(R.id.Pulse_P), Sampling = findViewById(R.id.Sampling),
-//            Ebrich_T = findViewById(R.id.Ebrich_T);
     private BluetoothSocket mmSocket;
     private static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
-    private double lowerLimit = -10.0;
-    private double upperLimit = 10.0;
-    private double stepSize = 0.1;
 
     private Map<String, Byte> optionByteMap = new HashMap<>();
     private byte[] Pkg = new byte[23];
-//    private static byte[] convertArrayListToByteArray(ArrayList<Integer> intArrayList) {
-//        ByteBuffer byteBuffer = ByteBuffer.allocate(intArrayList.size());
-//        for (Integer intValue : intArrayList) {
-//            byteBuffer.putInt(intValue);
-//        }
-//        return byteBuffer.array();
-//    }
 
     private byte[] setUsignHalfWord2PointFoward(EditText editText) { //小数点后两位
         String curEditTextString = editText.getText().toString();
@@ -183,7 +166,6 @@ BlueToothSender extends AppCompatActivity {
         interInterTmp = Integer.parseInt(interStringTmp);
         return (byte) interInterTmp;
     }
-//    @android.support.annotation.RequiresApi(api = Build.VERSION_CODES.ICE_CREAM_SANDWICH)
     @SuppressLint("MissingPermission")
     private void sendPkg(BluetoothSocket socket, byte[] pkg){
         try {
@@ -199,63 +181,6 @@ BlueToothSender extends AppCompatActivity {
             }
         }catch (Exception e){
             e.printStackTrace();
-        }
-    }
-    private static class RangeInputFilter implements InputFilter {
-        private double minValue;
-        private double maxValue;
-        private double stepSize;
-
-        public RangeInputFilter(double minValue, double maxValue, double stepSize) {
-            this.minValue = minValue;
-            this.maxValue = maxValue;
-            this.stepSize = stepSize;
-        }
-
-        @Override
-        public CharSequence filter(CharSequence source, int start, int end,
-                                   Spanned dest, int dstart, int dend) {
-            try {
-                // 将输入字符连接到原始文本
-                String newVal = dest.toString().substring(0, dstart) + source.toString() + dest.toString().substring(dend);
-
-                // 尝试将新值转换为double
-                double inputVal = Double.parseDouble(newVal);
-
-                // 检查是否在范围内，如果是，返回null表示接受输入
-                if (isInRange(inputVal)) {
-                    return null;
-                }
-            } catch (NumberFormatException e) {
-                // 当输入为空或无法转换为double时，忽略异常
-            }
-
-            // 输入不在范围内，返回空表示不接受输入
-            return "";
-        }
-
-        private boolean isInRange(double value) {
-            // 检查是否在指定的范围内，并且是步长的倍数
-            return value >= minValue && value <= maxValue && (value - minValue) % stepSize == 0;
-        }
-    }
-    private void handleTextChange(Editable editable, EditText editText) {
-        if (editable.length() > 0) {
-            double currentValue = Double.parseDouble(editable.toString());
-
-            // 验证输入值是否在范围内，并按步长调整
-            if (currentValue < lowerLimit) {
-                currentValue = lowerLimit;
-            } else if (currentValue > upperLimit) {
-                currentValue = upperLimit;
-            } else {
-                currentValue = Math.round(currentValue / stepSize) * stepSize;
-            }
-
-            // 更新EditText的文本
-            editText.setText(String.valueOf(currentValue));
-            // 将光标移到文本末尾
-            editText.setSelection(editText.getText().length());
         }
     }
     @Override
@@ -298,7 +223,6 @@ BlueToothSender extends AppCompatActivity {
          adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
          spinner.setAdapter(adapter);
          Intent intent = getIntent();
-         //InitE.setFilters(new InputFilter[]{new RangeInputFilter(-10, 10.0, 0.1)});
          //构建mmSocket通道
          String deviceAddress = intent.getStringExtra("device_address");
         BluetoothDevice device = BluetoothAdapter.getDefaultAdapter().getRemoteDevice(deviceAddress);
@@ -326,10 +250,6 @@ BlueToothSender extends AppCompatActivity {
              @Override
              public void onClick(View view) {
                  try {
-                     //int num = Integer.parseInt(number);
-//                     Intent intent = getIntent();
-//                     String deviceAddress = intent.getStringExtra("device_address");
-//                     BluetoothDevice device = BluetoothAdapter.getDefaultAdapter().getRemoteDevice(deviceAddress);
                      Pkg[0] = (byte) 0x5A;
                      Pkg[1] = (byte) 0xA5;
                      //判断控制流
@@ -343,8 +263,6 @@ BlueToothSender extends AppCompatActivity {
                      temp = setUsignHalfWord2PointFoward(Scan_R);//Scan_R u16
                      Pkg[5] = temp[0];
                      Pkg[6] = temp[1];
-                     //Pkg[5] = setUnsignedByte(Scan_R);//u16
-                     //Pkg[6] = setUnsignedByte(Scan_R);//Scan_R
 
                      Pkg[7] = setUnsignedByte(Sweep_s);//Sweeps
                      Pkg[8] = setUnsignedByte(sampling_I);//sampling_I
@@ -357,20 +275,14 @@ BlueToothSender extends AppCompatActivity {
                      temp = setSignHalfWord(Amplitude);//Ampltitude signed16
                      Pkg[11] = temp[0];
                      Pkg[12] = temp[1];
-                     //Pkg[11] = setUnsignedByte(Amplitude);//u16
-                     //Pkg[12] = setUnsignedByte(Amplitude);//Ampltitude
 
                      temp = setUsign5Word(Pulse_P);//Pulse_P u16
                      Pkg[13] = temp[0];
                      Pkg[14] = temp[1];
-                     //Pkg[13] = setUnsignedByte(Pulse_P);//u16
-                     //Pkg[14] = setUnsignedByte(Pulse_P);//Pulse_P
 
                      temp = setUsignHalfWord1PointFoward(Sampling);
                      Pkg[15] = temp[0];
                      Pkg[16] = temp[1];
-                     //Pkg[15] = setUnsignedByte(Sampling);//u16
-                     //Pkg[16] = setUnsignedByte(Sampling);//Sampling
 
                      Pkg[17] = setUnsignedByte(Ebrich_T);//Ebrich_T
                      Pkg[18] = setsignedByte(HighE);//HighE
@@ -379,10 +291,7 @@ BlueToothSender extends AppCompatActivity {
                      temp = setUsignHalfWord(Pulse_W);
                      Pkg[20] = temp[0];
                      Pkg[21] = temp[1];
-                     //Pkg[20] = setUnsignedByte(Pulse_W);//u16
-                     //Pkg[21]  = setUnsignedByte(Pulse_W);//Pulse
 
-                   //  Pkg[22] = setUnsignedByte(CRC);
                      sendPkg(mmSocket, Pkg);
                      Toast.makeText(BlueToothSender.this, "发送成功", Toast.LENGTH_SHORT).show();
                  } catch (NumberFormatException e){

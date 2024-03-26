@@ -27,7 +27,10 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.ValueFormatter;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -63,13 +66,11 @@ public class MainActivity extends AppCompatActivity {
         LineData lineData = new LineData(dataSet);
         lineChart.setData(lineData);
 
-
         XAxis xAxis = lineChart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setTextColor(Color.WHITE); // 设置横坐标轴标签颜色为白色
 
         xAxis.setDrawGridLines(false);
-        //xAxis.setGranularity(1f);
         xAxis.setValueFormatter(new ValueFormatter() {
             @Override
             public String getFormattedValue(float value) {
@@ -188,8 +189,7 @@ public class MainActivity extends AppCompatActivity {
         }
         return byteArray;
     }
-    public void setData(String bufferLine){
-        byte[] src = string2ByteArray(bufferLine);
+    public void setData(byte[] src){
         byte[] voltage = getSpecByteArray(4, 4, src);
         byte[] current = getSpecByteArray(8, 4, src);
         byte Neg = src[3];
@@ -223,23 +223,22 @@ public class MainActivity extends AppCompatActivity {
         try {
             Toast.makeText(this, "蓝牙链接成功", Toast.LENGTH_SHORT).show();
             InputStream mmInputStream = socket.getInputStream();
-            BufferedReader mmBufferedReader = new BufferedReader(new InputStreamReader(mmInputStream));
+            BufferedInputStream mmDataInputStream = new BufferedInputStream(mmInputStream);
+            //BufferedReader mmBufferedReader = new BufferedReader(new InputStreamReader(mmInputStream));
             thread = new Thread(new Runnable() {
                 @Override
                 public void run() {
                     try {
                         while (!Thread.currentThread().isInterrupted()) {
-                            String receivedData = mmBufferedReader.readLine();
-                            if (receivedData != null) {
+                            byte[] tmp = new byte[13];
+                            int flag = mmDataInputStream.read(tmp, 0, 13);
+
+                            if (flag != -1) {
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-
-                                        String tmp = receivedData.replaceAll("\\s", "");
-                                        if(tmp.length() != 26)
-                                            return;
                                         setData(tmp);
-                                        dataDisplay.append(tmp + "\n");
+                                        dataDisplay.append("recieve!" + "\n");
                                     }
                                 });
                             }
